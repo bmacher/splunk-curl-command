@@ -19,38 +19,37 @@ class curlCommand(GeneratingCommand):
   )
   paramMap = Option(
     doc='''
-    **Syntax:** **url=***<url>*
-		**Description:** Target URL''',
+    **Syntax:** **paramMap=***foo=bar,hello=world*
+		**Description:** Parameters of URL''',
     require=False,
   )
   
   def generate(self):
     # --- Bind arguments ---
     url = self.url
-    # Pattern foo=bar, bar=foo, ...
-    paramMap = self.paramMap
-    
-    if paramMap != None:
-      paramMap = paramMap.replace(' ', '')
-      # Parse paramMap and catch error
-      try:
-        paramMap = dict(paramMap.split('=') for paramMap in paramMap.split(','))
-      except:
-        yield {'Error': 'Could not parse paramMap! Use pattern foo=bar, hello=world'}
-        # Stop command
-        return
-
-      # Modify url with parameters
-      url += '?' + '&'.join('{}={}'.format(param, val) for param, val in paramMap.items())
+    paramMap = self.parseParamMap(self.paramMap) if self.paramMap != None else None
 
     # Load data from REST API
     res = {}    
     try:
-      req = requests.get(url)
+      req = requests.get(url, params=paramMap)
       res = req.json()
     except requests.exceptions.RequestException  as err:
       res = ({"Error:": err})
     
-    yield {'url': url}
+    yield res
+
+  '''
+    Parse paramMap into python dict
+    @paramMap string: Pattern 'foo=bar&hello=world, ...'
+    @return dict
+    
+    # ToDo: Handle cases in which a parameter occurs n>1 times
+  '''
+  def parseParamMap(self, paramMap):
+    try:
+      return dict(paramMap.split('=') for paramMap in paramMap.split(','))
+    except:
+      return {'Error': 'Could not parse paramMap! Use pattern foo=bar, hello=world'}
 
 dispatch(curlCommand, sys.argv, sys.stdin, sys.stdout, __name__)
