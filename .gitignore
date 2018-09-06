@@ -1,4 +1,5 @@
 .vscode
+run.py
 
 # Splunk specific
 local.meta

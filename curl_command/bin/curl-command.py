@@ -8,9 +8,11 @@ from splunklib.searchcommands import dispatch, GeneratingCommand, Configuration,
 # Command specific dependencies
 import requests
 from requests.auth import HTTPDigestAuth
+import json
 
 @Configuration(type='reporting')
 class curlCommand(GeneratingCommand):
+  # Authorization : Bearer cn389ncoiwuencr
   url = Option(
 		doc='''
 		  **Syntax:** **url=***<url>*
@@ -25,10 +27,34 @@ class curlCommand(GeneratingCommand):
     ''',
     require=False,
   )
+  output = Option(
+    doc='''
+      **Syntax:** **output=**<json/text>**
+		  **Description:** Output format 
+    ''',
+    require=False,
+    default='json'
+  )
+  timeout = Option(
+    doc='''
+      **Syntax:** **timeout=***<timeout>*
+		  **Description:** Time to wait before the request is stopped
+    ''',
+    require=False,
+    validate=validators.Integer(),
+    default=10
+  )
   auth = Option(
     doc='''
       **Syntax:** **auth=**<method,user,password>**
 		  **Description:** Authentication at the endpoint with user credentials
+    ''',
+    require=False,
+  )
+  headers = Option(
+    doc='''
+      **Syntax:** **headers=**<headers>**
+		  **Description:** Headers of the request
     ''',
     require=False,
   )
@@ -47,38 +73,22 @@ class curlCommand(GeneratingCommand):
     require=False,
     validate=validators.Boolean()
   )
-  timeout = Option(
-    doc='''
-      **Syntax:** **timeout=***<timeout>*
-		  **Description:** Time to wait before the request is stopped
-    ''',
-    require=False,
-    validate=validators.Integer(),
-    default=10
-  )
-  output = Option(
-    doc='''
-      **Syntax:** **output=**<json/text>**
-		  **Description:** Output format 
-    ''',
-    require=False,
-    default='json'
-  )
   
   def generate(self):
-    url = self.url
-    paramMap = self.parseParamMap(self.paramMap) if self.paramMap != None else None
-    output = self.output
-    proxies = self.parseParamMap(self.proxies) if self.proxies != None else None
+    url        = self.url
+    paramMap   = self.parseParamMap(self.paramMap) if self.paramMap != None else None
+    output     = self.output
+    timeout    = self.timeout if self.timeout != None else None
+    auth       = self.parseAuth(self.auth) if self.auth != None else None
+    headers     = self.parseHeaders(self.headers) if self.headers != None else None
+    proxies    = self.parseProxies(self.proxies) if self.proxies != None else None
     unsetProxy = self.unsetProxy
-    timeout = self.timeout if self.timeout != None else None
-    auth = self.parseAuth(self.auth) if self.auth != None else None
  
     # Unset proxy, if unsetProxy = True
     if unsetProxy == True:
-      if 'HTTP' in os.environ.key():
+      if 'HTTP' in os.environ.keys():
         del os.environ['HTTP']
-      if 'HTTPS' in os.environ.key():
+      if 'HTTPS' in os.environ.keys():
         del os.environ['HTTPS']
 
     # Load data from REST API
@@ -87,9 +97,10 @@ class curlCommand(GeneratingCommand):
       request = requests.get(
         url,
         params=paramMap,
-        proxies=proxies,
+        auth=auth,
+        headers=headers,
         timeout=timeout,
-        auth=auth
+        proxies=proxies
       )
 
       # Choose right output format
@@ -98,7 +109,7 @@ class curlCommand(GeneratingCommand):
       else:
         record = {'reponse': request.content}
 
-    except requests.exceptions.RequestException  as err:
+    except requests.exceptions.RequestException as err:
       record = ({"Error:": err})
     
     yield record
@@ -153,5 +164,15 @@ class curlCommand(GeneratingCommand):
     # Return false in case of no valid method
     return False
     
+  '''
+    Convert headers string into dict
+    @headers string: Headers as json string
+    @return dict
+  '''
+  def parseHeaders(self, headers):
+    # Replace single quotes with double quotes for valid json
+    return json.loads(
+      headers.replace('\'', '"')
+    )
 
 dispatch(curlCommand, sys.argv, sys.stdin, sys.stdout, __name__)
