@@ -13,66 +13,14 @@ import json
 @Configuration(type='reporting')
 class curlCommand(GeneratingCommand):
   # Authorization : Bearer cn389ncoiwuencr
-  url = Option(
-		doc='''
-		  **Syntax:** **url=***<url>*
-		  **Description:** Target URL
-    ''',
-		require=True
-  )
-  paramMap = Option(
-    doc='''
-      **Syntax:** **paramMap=***<foo=bar,hello=world>*
-		  **Description:** Parameters of URL
-    ''',
-    require=False,
-  )
-  output = Option(
-    doc='''
-      **Syntax:** **output=**<json/text>**
-		  **Description:** Output format 
-    ''',
-    require=False,
-    default='json'
-  )
-  timeout = Option(
-    doc='''
-      **Syntax:** **timeout=***<timeout>*
-		  **Description:** Time to wait before the request is stopped
-    ''',
-    require=False,
-    validate=validators.Integer(),
-    default=10
-  )
-  auth = Option(
-    doc='''
-      **Syntax:** **auth=**<method,user,password>**
-		  **Description:** Authentication at the endpoint with user credentials
-    ''',
-    require=False,
-  )
-  headers = Option(
-    doc='''
-      **Syntax:** **headers=**<headers>**
-		  **Description:** Headers of the request
-    ''',
-    require=False,
-  )
-  proxies = Option(
-    doc='''
-      **Syntax:** **proxy=***<http_proxy, https_proxy>*
-		  **Description:** Proxies
-    ''',
-    require=False
-  )
-  unsetProxy = Option(
-    doc='''
-      **Syntax:** **useProxy=***<true/false>*
-		  **Description:** Unset proxy during the session
-    ''',
-    require=False,
-    validate=validators.Boolean()
-  )
+  url        = Option(require=True)
+  paramMap   = Option(require=False)
+  output     = Option(require=False, default='json')
+  timeout    = Option(require=False, default=10, validate=validators.Integer())
+  auth       = Option(require=False)
+  headers    = Option(require=False)
+  proxies    = Option(require=False)
+  unsetProxy = Option(require=False, validate=validators.Boolean())
   
   def generate(self):
     url        = self.url
@@ -80,7 +28,7 @@ class curlCommand(GeneratingCommand):
     output     = self.output
     timeout    = self.timeout if self.timeout != None else None
     auth       = self.parseAuth(self.auth) if self.auth != None else None
-    headers     = self.parseHeaders(self.headers) if self.headers != None else None
+    headers    = self.parseHeaders(self.headers) if self.headers != None else None
     proxies    = self.parseProxies(self.proxies) if self.proxies != None else None
     unsetProxy = self.unsetProxy
  
@@ -128,7 +76,7 @@ class curlCommand(GeneratingCommand):
     paramMap = paramMap.split(',')
 
     for param in paramMap:
-      paramStr += param.replace('&#44;', ',') + '&'
+      paramStr += param.replace('&#44;', ',').strip() + '&'
 
     # Delete last &
     return paramStr[:-1]
@@ -139,11 +87,11 @@ class curlCommand(GeneratingCommand):
     @return dict
   '''
   def parseProxies(self, proxies):
-    proxies = proxies.replace(' ', '').split(',')
+    proxies = proxies.split(',')
 
     return {
-      'http': proxies[0],
-      'https' : proxies[1]
+      'http': proxies[0].strip(),
+      'https' : proxies[1].strip()
     }
 
   '''
@@ -157,9 +105,9 @@ class curlCommand(GeneratingCommand):
 
     # Use correcht auth method
     if auth[0].lower() == 'basic':
-      return (auth[1], auth[2])
+      return (auth[1].strip(), auth[2].strip())
     elif auth[0].lower() == 'digest':
-      return HTTPDigestAuth(auth[0], auth[1])
+      return HTTPDigestAuth(auth[0].strip(), auth[1].strip())
 
     # Return false in case of no valid method
     return False
