@@ -11,11 +11,17 @@ for line in lines:
   if re.match('version', line):
     version = re.search(r'version\s?=\s?(\d\.\d\.\d)', line).group(1)
 
-# Delete older built
+# Delete older build
 for file in glob.glob('./dist/curl_command*'):
   os.remove(file)
 
-# Create tar
-os.system('tar -zcf dist/curl_command-%s.tar.gz curl_command' % (version))
+os.chdir('./curl_command')
+for file in glob.glob('./*.py'):
+  print file
 
-print 'App <curl_command-%s.tar.gz> successfully built!' % (version)
+# os.system('cp -R curl_command dist')
+
+
+#os.system('tar -zcf dist/curl_command-%s.tar.gz curl_command' % (version))
+
+#print 'App <curl_command-%s.tar.gz> successfully built!' % (version)
