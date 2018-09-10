@@ -1,5 +1,5 @@
 # Build image and run container
-#  docker build -t splunk_appinspect . && docker run --name splunk_appinspect -it splunk_appinspect
+#  docker build -t splunk_appinspect . && docker run --name splunk_appinspect -v /Users/Benjamin/git/splunk-curl-command/dist:/home/splunk_apps -it splunk_appinspect
 # Delete container and image
 #  docker container rm splunk_appinspect && docker image rm splunk_appinspect
 # ENTRYPOINT

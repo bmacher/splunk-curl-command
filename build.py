@@ -15,13 +15,11 @@ for line in lines:
 for file in glob.glob('./dist/curl_command*'):
   os.remove(file)
 
-os.chdir('./curl_command')
-for file in glob.glob('./*.py'):
-  print file
+# Copy App, delete uneccesary files and create .tar.gz
+os.system('cp -R curl_command dist/')
+os.system('find dist/curl_command -name ".*" -delete')
+os.system('find dist/curl_command -name "*.pyc" -delete')
+os.system('tar -zcf dist/curl_command-%s.tar.gz curl_command' % (version))
+os.system('rm -rf dist/curl_command')
 
-# os.system('cp -R curl_command dist')
-
-
-#os.system('tar -zcf dist/curl_command-%s.tar.gz curl_command' % (version))
-
-#print 'App <curl_command-%s.tar.gz> successfully built!' % (version)
+print 'App <curl_command-%s.tar.gz> successfully built!' % (version)
