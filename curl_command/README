@@ -1,1 +1,38 @@
-Generating command to poll data from REST APIs.
+This app contains the search command "curl", which polls data from a REST API.
+ © 2018 Benjamin Macher
+
+Contact: benjamin.macher@outlook.com
+Source: https://github.com/bmacher/splunk-curl-command
+
+Syntax
+
+  | curl <url> <paramMap>? <output>? <timeout>? <auth>? <headers>? <proxies>? <unsetProxy>?
+
+Option TYPE: pattern
+
+  url string: http://my_rest_api/endpoint
+  
+  paramMap string: param1=val1, param2=val2
+  
+  output string: json || text (default: jsont)
+  
+  timeout int: 0..∞
+  
+  auth string: Basic, User, Passwird
+
+  headers json: {'option1': 'val1', 'option2': 'val2'}
+
+  proxies string: http_proxy, https_proxy
+
+  unsetProxy bool: true || false (default: false)
+
+Examples
+
+| curl url="https://reqres.in/api/users"
+-- Returns the data from the endpoint as json
+
+| curl url="https://api.github.com/user" auth="basic, <user>, <password>" output=text
+-- Basic login at the Github API with reponse as plain text
+
+| curl url="http://influx:3000/api/datasources/proxy/1/query" paramMap="db=statsdemo, q=show tag keys" headers="{'Authorization': 'Bearer <token>'}"
+-- Access InfluxDB with token
