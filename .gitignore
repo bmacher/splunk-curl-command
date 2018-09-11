@@ -1,6 +1,7 @@
 .vscode
 run.py
 .DS_Store
+dist/review.txt
 
 # Splunk specific
 local.meta
