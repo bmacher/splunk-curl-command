@@ -55,7 +55,7 @@ class curlCommand(GeneratingCommand):
       if output == 'json':
         record = request.json()
       else:
-        record = {'reponse': request.content}
+        record = {'response': request.content}
 
     except requests.exceptions.RequestException as err:
       record = ({"Error:": err})
