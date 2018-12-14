@@ -87,7 +87,11 @@ class curlCommand(GeneratingCommand):
       if output == 'json':
         event = request.json()
       else:
+<<<<<<< HEAD
         event = {'reponse': request.content}
+=======
+        record = {'response': request.content}
+>>>>>>> 70af473b9517277ac592d0066d408ea853fcb02f
 
     except requests.exceptions.RequestException as err:
       event = ({"Error:": err})
