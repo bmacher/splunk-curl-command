@@ -12,8 +12,8 @@ for line in lines:
     version = re.search(r'version\s?=\s?(\d\.\d\.\d)', line).group(1)
 
 # Delete older build
-for file in glob.glob('./dist/curl_command*'):
-  os.remove(file)
+# for file in glob.glob('./dist/curl_command*'):
+#   os.remove(file)
 
 # Copy App, delete uneccesary files and create .tar.gz
 os.system('cp -R curl_command dist/')
