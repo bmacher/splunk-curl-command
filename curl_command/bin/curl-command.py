@@ -29,6 +29,7 @@ class curlCommand(GeneratingCommand):
   headers    = Option(require=False)
   proxies    = Option(require=False)
   unsetProxy = Option(require=False, validate=validators.Boolean())
+  verify     = Option(require=False, default=True, validate=validators.Boolean())
   
   # Deprecated
   paramMap   = Option(require=False)
@@ -43,7 +44,8 @@ class curlCommand(GeneratingCommand):
     auth       = self.parseAuth(self.auth) if self.auth != None else None
     headers    = self.parseJSONStrToJSON(self.headers) if self.headers != None else None
     proxies    = self.parseProxies(self.proxies) if self.proxies != None else None
-    unsetProxy = self.unsetProxy
+    unsetProxy = bool(self.unsetProxy)
+    verify     = bool(self.verify)
     
     # Deprecated
     paramMap   = self.parseParamMap(self.paramMap) if self.paramMap != None else None
@@ -69,7 +71,8 @@ class curlCommand(GeneratingCommand):
           auth=auth,
           headers=headers,
           timeout=timeout,
-          proxies=proxies
+          proxies=proxies,
+          verify=verify
         )
       elif method == 'post':
         request = requests.post(
@@ -78,7 +81,8 @@ class curlCommand(GeneratingCommand):
           auth=auth,
           headers=headers,
           timeout=timeout,
-          proxies=proxies
+          proxies=proxies,
+          verify=verify
         )
       else:
         raise ValueError('Only get and post are valid methods.')

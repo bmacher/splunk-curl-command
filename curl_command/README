@@ -6,7 +6,7 @@ Source: https://github.com/bmacher/splunk-curl-command
 
 Syntax
 
-  | curl <url> <paramMap>? <output>? <timeout>? <auth>? <headers>? <proxies>? <unsetProxy>?
+  | curl <url> <paramMap>? <output>? <timeout>? <auth>? <headers>? <proxies>? <unsetProxy>? <verify>?
 
 Option TYPE: pattern
 
@@ -25,6 +25,8 @@ Option TYPE: pattern
   proxies string: http_proxy, https_proxy
 
   unsetProxy bool: true || false (default: false)
+
+  verify bool: true || false (default: true)
 
 Examples
 

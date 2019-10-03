@@ -2,7 +2,7 @@
 This app contains the search command "curl", which polls data from a REST API. The syntax is as follows, with the question mark indicating the optional Options.
 
 ```
-| curl <url> <paramMap>? <output>? <timeout>? <auth>? <headers>? <proxies>? <unsetProxy>?
+| curl <url> <paramMap>? <output>? <timeout>? <auth>? <headers>? <proxies>? <unsetProxy>? <verify>?
 ```
 
 #### Options in detail
@@ -17,6 +17,7 @@ auth | string | Basic, User, Password
 headers | json | {'option1': 'val1', 'option2': 'val2'}
 proxies | string | http_proxy, https_proxy
 unsetProxy | bool | true OR false (default: false)
+verify | bool | true OR false (default: true)
 
 #### Examples
 Returns the data from the endpoint as json
